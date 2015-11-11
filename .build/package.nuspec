@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+	<metadata>
+		<id>shuttle-esb-process</id>
+		<version>{semver}</version>
+		<authors>Eben Roux</authors>
+		<owners>Eben Roux</owners>
+		<licenseUrl>https://github.com/shuttle/shuttle-esb-process/raw/master/LICENSE</licenseUrl>
+		<projectUrl>https://github.com/shuttle/shuttle-esb-process</projectUrl>
+		<iconUrl>https://raw.githubusercontent.com/Shuttle/shuttle-esb-process/master/.media/logo.png</iconUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Process management using shuttle-recall event sourcing.</description>
+		<releaseNotes/>
+		<copyright>Copyright (c) 2011-{year}, Eben Roux</copyright>
+    <tags>shuttle-esb enterprise-service-bus esb messaging service-bus soa sagas process-manager bpm process</tags>
+    <dependencies>
+      <dependency id="shuttle-core-data" version="{shuttle-core-data-version}" />
+      <dependency id="shuttle-esb-core" version="{shuttle-esb-core-version}" />
+      <dependency id="shuttle-recall-core" version="{shuttle-recall-core-version}" />
+    </dependencies>
+  </metadata>
+</package>
