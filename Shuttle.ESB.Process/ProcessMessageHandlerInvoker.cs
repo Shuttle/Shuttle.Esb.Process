@@ -12,17 +12,19 @@ namespace Shuttle.ESB.Process
         private readonly IDatabaseContextFactory _databaseContextFactory;
         private readonly IMessageHandlerInvoker _defaultMessageHandlerInvoker;
         private readonly IEventStore _eventStore;
-        private readonly Type _eventStreamType = typeof(EventStream);
+        private readonly IKeyStore _keyStore;
 
-        public ProcessMessageHandlerInvoker(IDatabaseContextFactory databaseContextFactory, IEventStore eventStore,
+        public ProcessMessageHandlerInvoker(IDatabaseContextFactory databaseContextFactory, IEventStore eventStore, IKeyStore keyStore,
             IProcessConfiguration configuration)
         {
             Guard.AgainstNull(databaseContextFactory, "databaseContextFactory");
             Guard.AgainstNull(eventStore, "eventStore");
+            Guard.AgainstNull(eventStore, "keyStore");
             Guard.AgainstNull(configuration, "configuration");
 
             _databaseContextFactory = databaseContextFactory;
             _eventStore = eventStore;
+            _keyStore = keyStore;
             _configuration = configuration;
 
             _defaultMessageHandlerInvoker = new DefaultMessageHandlerInvoker();
@@ -51,9 +53,9 @@ namespace Shuttle.ESB.Process
             stream.Apply(processInstance);
 
             var messageType = message.GetType();
-            var contextType = typeof(HandlerContext<>).MakeGenericType(messageType);
+            var contextType = typeof(ProcessHandlerContext<>).MakeGenericType(messageType);
             var processType = processInstance.GetType();
-            var method = processType.GetMethod("ProcessMessage", new[] { contextType, _eventStreamType });
+            var method = processType.GetMethod("ProcessMessage", new[] { contextType });
 
             if (method == null)
             {
@@ -63,8 +65,7 @@ namespace Shuttle.ESB.Process
                     messageType.FullName));
             }
 
-            var handlerContext = Activator.CreateInstance(contextType, state.GetServiceBus(), transportMessage, message,
-                state.GetActiveState());
+            var handlerContext = Activator.CreateInstance(contextType, state.GetServiceBus(), transportMessage, message, state.GetActiveState(), _keyStore, stream);
 
             method.Invoke(processInstance, new[] { handlerContext, stream });
 
