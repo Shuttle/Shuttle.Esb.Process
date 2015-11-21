@@ -67,7 +67,7 @@ namespace Shuttle.ESB.Process
 
             var handlerContext = Activator.CreateInstance(contextType, state.GetServiceBus(), transportMessage, message, state.GetActiveState(), _keyStore, stream);
 
-            method.Invoke(processInstance, new[] { handlerContext, stream });
+            method.Invoke(processInstance, new[] { handlerContext });
 
             using (_databaseContextFactory.Create(_configuration.ProviderName, _configuration.ConnectionString))
             {
