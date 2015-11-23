@@ -4,7 +4,7 @@ using Shuttle.Recall.Core;
 
 namespace Shuttle.ESB.Process
 {
-    public class ProcessHandlerContext<T> : HandlerContext<T> where T : class
+    public class ProcessHandlerContext<T> : HandlerContext<T>, IProcessHandlerContext<T> where T : class
     {
         public IKeyStore KeyStore { get; private set; }
         public EventStream Stream { get; private set; }

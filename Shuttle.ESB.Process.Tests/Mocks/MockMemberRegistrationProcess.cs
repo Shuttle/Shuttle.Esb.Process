@@ -15,17 +15,17 @@ namespace Shuttle.ESB.Process.Tests
 
         public Guid CorrelationId { get; private set; }
 
-        public void ProcessMessage(ProcessHandlerContext<MockCompleteMemberRegistrationCommand> context)
+        public void ProcessMessage(IProcessHandlerContext<MockCompleteMemberRegistrationCommand> context)
         {
             throw new NotImplementedException();
         }
 
-        public void ProcessMessage(ProcessHandlerContext<MockEMailSentEvent> context)
+        public void ProcessMessage(IProcessHandlerContext<MockEMailSentEvent> context)
         {
             throw new NotImplementedException();
         }
 
-        public void ProcessMessage(ProcessHandlerContext<MockRegisterMemberCommand> context)
+        public void ProcessMessage(IProcessHandlerContext<MockRegisterMemberCommand> context)
         {
             throw new NotImplementedException();
         }
