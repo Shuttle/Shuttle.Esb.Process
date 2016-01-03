@@ -11,7 +11,7 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Process management using shuttle-recall event sourcing.</description>
 		<releaseNotes/>
-		<copyright>Copyright (c) 2011-{year}, Eben Roux</copyright>
+		<copyright>Copyright (c) {year}, Eben Roux</copyright>
     <tags>shuttle-esb enterprise-service-bus esb messaging service-bus soa sagas process-manager bpm process</tags>
     <dependencies>
       <dependency id="shuttle-core-data" version="{shuttle-core-data-version}" />

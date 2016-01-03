@@ -3,6 +3,8 @@ using Shuttle.Core.Data;
 using Shuttle.Core.Infrastructure;
 using Shuttle.ESB.Core;
 using Shuttle.Recall.Core;
+using IModule = Shuttle.ESB.Core.IModule;
+using PipelineEventArgs = Shuttle.ESB.Core.PipelineEventArgs;
 
 namespace Shuttle.ESB.Process
 {

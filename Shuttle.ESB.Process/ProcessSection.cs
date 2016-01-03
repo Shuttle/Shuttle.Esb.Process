@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using Shuttle.Core.Infrastructure;
 using Shuttle.ESB.Core;
 
 namespace Shuttle.ESB.Process
@@ -11,14 +12,9 @@ namespace Shuttle.ESB.Process
             get { return (string) this["connectionStringName"]; }
         }
 
-        public static ProcessSection Open(string file)
-        {
-            return ShuttleConfigurationSection.Open<ProcessSection>("process", file);
-        }
-
         public static ProcessConfiguration Configuration()
         {
-            var section = ShuttleConfigurationSection.Open<ProcessSection>("process");
+            var section = ConfigurationSectionProvider.Open<ProcessSection>("shuttle", "process");
             var configuration = new ProcessConfiguration();
 
             var connectionStringName = "Process";
