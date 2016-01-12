@@ -7,7 +7,6 @@ namespace Shuttle.ESB.Process
 {
 	public class DefaultProcessActivator : IProcessActivator
 	{
-		private readonly IProcessFactory _processFactory;
 		private static readonly List<MessageProcessType> EmptyMappings = new List<MessageProcessType>();
 		private static readonly object Padlock = new object();
 
@@ -17,11 +16,18 @@ namespace Shuttle.ESB.Process
 		private readonly Dictionary<Type, Func<TransportMessage, object, MessageProcessType>> _resolvers =
 			new Dictionary<Type, Func<TransportMessage, object, MessageProcessType>>();
 
-		public DefaultProcessActivator(IProcessFactory processFactory)
-		{
-			Guard.AgainstNull(processFactory, "processFactory");
+		private readonly Func<Type, IProcessManager> _processFactoryFunction;
 
-			_processFactory = processFactory;
+		public DefaultProcessActivator()
+		{
+			_processFactoryFunction = type => (IProcessManager)Activator.CreateInstance(type);
+		}
+
+		public DefaultProcessActivator(Func<Type, IProcessManager> processFactoryFunction)
+		{
+			Guard.AgainstNull(_processFactoryFunction, "processFactoryFunction");
+
+			_processFactoryFunction = processFactoryFunction;
 		}
 
 		public IProcessActivator RegisterResolver<TMessageType>(
@@ -124,7 +130,7 @@ namespace Shuttle.ESB.Process
 				messageProcessType = resolver.Invoke(transportMessage, message);
 			}
 
-			object processInstance;
+			IProcessManager processInstance;
 			Guid correlationId;
 
 			if (!messageProcessType.IsStartedByMessage)
@@ -143,21 +149,14 @@ namespace Shuttle.ESB.Process
 
 			try
 			{
-				processInstance = _processFactory.Create(messageProcessType.ProcessType);
+				processInstance = _processFactoryFunction.Invoke(messageProcessType.ProcessType);
 			}
 			catch
 			{
-				throw new ProcessException(string.Format(ProcessResources.MissingProcessConstructor,
-					messageProcessType.ProcessType.AssemblyQualifiedName));
+				throw new ProcessException(string.Format(ProcessResources.ProcessFactoryFunctionException, messageProcessType.ProcessType.AssemblyQualifiedName));
 			}
 
-			var result = processInstance as IProcessManager;
-
-			if (result == null)
-			{
-				throw new ProcessException(string.Format(ProcessResources.IProcessManagerCastException,
-					messageProcessType.ProcessType.FullName));
-			}
+			var result = processInstance;
 
 			result.CorrelationId = correlationId;
 
@@ -216,11 +215,6 @@ namespace Shuttle.ESB.Process
 					RegisterProcessMessage(genericArgument, type, isStartedByMessage);
 				}
 			}
-		}
-
-		public static IProcessActivator Default()
-		{
-			return new DefaultProcessActivator(new DefaultProcessFactory());
 		}
 	}
 }

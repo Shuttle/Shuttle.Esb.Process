@@ -82,8 +82,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefaultProcessFactory.cs" />
-    <Compile Include="IProcessFactory.cs" />
     <Compile Include="IProcessHandlerContext.cs" />
     <Compile Include="IProcessMessageAssessor.cs" />
     <Compile Include="IProcessStartMessageHandler.cs" />

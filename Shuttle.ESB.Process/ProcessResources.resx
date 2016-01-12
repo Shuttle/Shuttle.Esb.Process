@@ -121,12 +121,8 @@
     <value>Process type '{0}' cannot process message type '{1}' since the correlation id of '{2}' is not a valid guid.</value>
     <comment>{0} = full type name of the process type, {1} = full type name of the message, {2} = the correlation id of the transport message</comment>
   </data>
-  <data name="IProcessManagerCastException" xml:space="preserve">
-    <value>Could not cast process instance of type '{0}' to IProcessManager.</value>
-    <comment>{0} = full type name of the process type</comment>
-  </data>
-  <data name="MissingProcessConstructor" xml:space="preserve">
-    <value>Process type with AssemblyQualifiedName '{0}' does not have a constructor that takes only a Guid.</value>
+  <data name="ProcessFactoryFunctionException" xml:space="preserve">
+    <value>Process type with AssemblyQualifiedName '{0}' could not be instantiated.</value>
     <comment>{0} = assembly qualified name of process type</comment>
   </data>
   <data name="ResolverRequiredForMultipleMappingsException" xml:space="preserve">
