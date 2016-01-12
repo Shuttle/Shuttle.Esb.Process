@@ -11,7 +11,7 @@ namespace Shuttle.ESB.Process.Tests
         public void Should_be_able_to_request_mapping_registration()
         {
             var transportMessage = new TransportMessage();
-            var activator = new DefaultProcessActivator();
+            var activator = Activator();
 
             activator.RegisterMappings();
 
@@ -25,7 +25,12 @@ namespace Shuttle.ESB.Process.Tests
             Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockCompleteMemberRegistrationCommand()));
         }
 
-        [Test]
+	    private static DefaultProcessActivator Activator()
+	    {
+		    return (DefaultProcessActivator)DefaultProcessActivator.Default();
+	    }
+
+	    [Test]
         public void Should_be_able_to_resolve_message_to_multiple_processes()
         {
             var transportMessage = new TransportMessage
@@ -33,7 +38,7 @@ namespace Shuttle.ESB.Process.Tests
                 CorrelationId = Guid.NewGuid().ToString()
             };
 
-            var activator = new DefaultProcessActivator();
+            var activator = Activator();
 
             activator.RegisterMappings();
 
@@ -49,7 +54,7 @@ namespace Shuttle.ESB.Process.Tests
         public void Should_be_able_to_start_process()
         {
             var transportMessage = new TransportMessage();
-            var activator = new DefaultProcessActivator();
+            var activator = Activator();
 
             activator.RegisterMappings();
 
@@ -61,7 +66,7 @@ namespace Shuttle.ESB.Process.Tests
         public void Should_throw_exception_when_creating_unknown_process()
         {
             var transportMessage = new TransportMessage();
-            var activator = new DefaultProcessActivator();
+            var activator = DefaultProcessActivator.Default();
 
             Assert.Throws<ProcessException>(() => activator.Create(transportMessage, new MockRegisterMemberCommand()));
         }
@@ -70,7 +75,7 @@ namespace Shuttle.ESB.Process.Tests
         public void Should_throw_exception_when_no_resolver_for_message_to_multiple_processes()
         {
             var transportMessage = new TransportMessage();
-            var activator = new DefaultProcessActivator();
+            var activator = Activator();
 
             activator.RegisterMappings();
 

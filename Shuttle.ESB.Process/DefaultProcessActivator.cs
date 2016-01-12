@@ -5,207 +5,222 @@ using Shuttle.ESB.Core;
 
 namespace Shuttle.ESB.Process
 {
-    public class DefaultProcessActivator : IProcessActivator
-    {
-        private static readonly List<MessageProcessType> EmptyMappings = new List<MessageProcessType>();
-        private static readonly object Padlock = new object();
+	public class DefaultProcessActivator : IProcessActivator
+	{
+		private readonly IProcessFactory _processFactory;
+		private static readonly List<MessageProcessType> EmptyMappings = new List<MessageProcessType>();
+		private static readonly object Padlock = new object();
 
-        private readonly Dictionary<Type, List<MessageProcessType>> _mappings =
-            new Dictionary<Type, List<MessageProcessType>>();
+		private readonly Dictionary<Type, List<MessageProcessType>> _mappings =
+			new Dictionary<Type, List<MessageProcessType>>();
 
-        private readonly Dictionary<Type, Func<TransportMessage, object, MessageProcessType>> _resolvers =
-            new Dictionary<Type, Func<TransportMessage, object, MessageProcessType>>();
+		private readonly Dictionary<Type, Func<TransportMessage, object, MessageProcessType>> _resolvers =
+			new Dictionary<Type, Func<TransportMessage, object, MessageProcessType>>();
 
-        public IProcessActivator RegisterResolver<TMessageType>(
-            Func<TransportMessage, object, MessageProcessType> resolver)
-        {
-            Guard.AgainstNull(resolver, "resolver");
+		public DefaultProcessActivator(IProcessFactory processFactory)
+		{
+			Guard.AgainstNull(processFactory, "processFactory");
 
-            _resolvers.Add(typeof (TMessageType), resolver);
+			_processFactory = processFactory;
+		}
 
-            return this;
-        }
+		public IProcessActivator RegisterResolver<TMessageType>(
+			Func<TransportMessage, object, MessageProcessType> resolver)
+		{
+			Guard.AgainstNull(resolver, "resolver");
 
-        public IProcessActivator RegisterProcessMessage<TMessageType, TProcessType>()
-        {
-            RegisterProcessMessage(typeof (TMessageType), typeof (TProcessType));
+			_resolvers.Add(typeof(TMessageType), resolver);
 
-            return this;
-        }
+			return this;
+		}
 
-        public IProcessActivator RegisterProcessMessage(Type messageType, Type processType)
-        {
-            RegisterProcessMessage(messageType, processType, false);
+		public IProcessActivator RegisterProcessMessage<TMessageType, TProcessType>()
+		{
+			RegisterProcessMessage(typeof(TMessageType), typeof(TProcessType));
 
-            return this;
-        }
+			return this;
+		}
 
-        public IProcessActivator RegisterProcessStartMessage<TMessageType, TProcessType>()
-        {
-            RegisterProcessStartMessage(typeof (TMessageType), typeof (TProcessType));
+		public IProcessActivator RegisterProcessMessage(Type messageType, Type processType)
+		{
+			RegisterProcessMessage(messageType, processType, false);
 
-            return this;
-        }
+			return this;
+		}
 
-        public IProcessActivator RegisterProcessStartMessage(Type messageType, Type processType)
-        {
-            RegisterProcessMessage(messageType, processType, true);
+		public IProcessActivator RegisterProcessStartMessage<TMessageType, TProcessType>()
+		{
+			RegisterProcessStartMessage(typeof(TMessageType), typeof(TProcessType));
 
-            return this;
-        }
+			return this;
+		}
 
-        public bool IsProcessMessage(TransportMessage transportMessage, object message)
-        {
-            Guard.AgainstNull(transportMessage, "transportMessage");
-            Guard.AgainstNull(message, "message");
+		public IProcessActivator RegisterProcessStartMessage(Type messageType, Type processType)
+		{
+			RegisterProcessMessage(messageType, processType, true);
 
-            var messageType = message.GetType();
+			return this;
+		}
 
-            List<MessageProcessType> mappings;
+		public bool IsProcessMessage(TransportMessage transportMessage, object message)
+		{
+			Guard.AgainstNull(transportMessage, "transportMessage");
+			Guard.AgainstNull(message, "message");
 
-            lock (Padlock)
-            {
-                mappings = !_mappings.ContainsKey(messageType)
-                    ? EmptyMappings
-                    : _mappings[messageType];
-            }
+			var messageType = message.GetType();
 
-            if (mappings.Count > 0)
-            {
-                return true;
-            }
+			List<MessageProcessType> mappings;
 
-            var resolver = FindResolver(messageType);
+			lock (Padlock)
+			{
+				mappings = !_mappings.ContainsKey(messageType)
+					? EmptyMappings
+					: _mappings[messageType];
+			}
 
-            return resolver != null && resolver.Invoke(transportMessage, message) != null;
-        }
+			if (mappings.Count > 0)
+			{
+				return true;
+			}
 
-        public IProcessManager Create(TransportMessage transportMessage, object message)
-        {
-            Guard.AgainstNull(transportMessage, "transportMessage");
-            Guard.AgainstNull(message, "message");
+			var resolver = FindResolver(messageType);
 
-            var messageType = message.GetType();
-            List<MessageProcessType> mappings;
+			return resolver != null && resolver.Invoke(transportMessage, message) != null;
+		}
 
-            lock (Padlock)
-            {
-                mappings = !_mappings.ContainsKey(messageType)
-                    ? EmptyMappings
-                    : _mappings[messageType];
-            }
+		public IProcessManager Create(TransportMessage transportMessage, object message)
+		{
+			Guard.AgainstNull(transportMessage, "transportMessage");
+			Guard.AgainstNull(message, "message");
 
-            MessageProcessType messageProcessType;
+			var messageType = message.GetType();
+			List<MessageProcessType> mappings;
 
-            if (mappings.Count == 1)
-            {
-                messageProcessType = mappings[0];
-            }
-            else
-            {
-                var resolver = FindResolver(messageType);
+			lock (Padlock)
+			{
+				mappings = !_mappings.ContainsKey(messageType)
+					? EmptyMappings
+					: _mappings[messageType];
+			}
 
-                if (resolver == null)
-                {
-                    throw new ProcessException(mappings.Count > 1
-                        ? string.Format(ProcessResources.ResolverRequiredForMultipleMappingsException,
-                            messageType.FullName)
-                        : string.Format(ProcessResources.ResolverRequiredForNoMappingException, messageType.FullName));
-                }
+			MessageProcessType messageProcessType;
 
-                messageProcessType = resolver.Invoke(transportMessage, message);
-            }
+			if (mappings.Count == 1)
+			{
+				messageProcessType = mappings[0];
+			}
+			else
+			{
+				var resolver = FindResolver(messageType);
 
-            object processInstance;
-            Guid processInstanceId;
+				if (resolver == null)
+				{
+					throw new ProcessException(mappings.Count > 1
+						? string.Format(ProcessResources.ResolverRequiredForMultipleMappingsException,
+							messageType.FullName)
+						: string.Format(ProcessResources.ResolverRequiredForNoMappingException, messageType.FullName));
+				}
 
-            if (!messageProcessType.IsStartedByMessage)
-            {
-                if (!Guid.TryParse(transportMessage.CorrelationId, out processInstanceId))
-                {
-                    throw new ProcessException(string.Format(ProcessResources.InvalidCorrelationGuid,
-                        messageProcessType.ProcessType.FullName, messageType.FullName,
-                        transportMessage.CorrelationId));
-                }
-            }
-            else
-            {
-                processInstanceId = Guid.NewGuid();
-            }
+				messageProcessType = resolver.Invoke(transportMessage, message);
+			}
 
-            try
-            {
-                processInstance = Activator.CreateInstance(messageProcessType.ProcessType, processInstanceId);
-            }
-            catch
-            {
-                throw new ProcessException(string.Format(ProcessResources.MissingProcessConstructor,
-                    messageProcessType.ProcessType.AssemblyQualifiedName));
-            }
+			object processInstance;
+			Guid correlationId;
 
-            var result = processInstance as IProcessManager;
+			if (!messageProcessType.IsStartedByMessage)
+			{
+				if (!Guid.TryParse(transportMessage.CorrelationId, out correlationId))
+				{
+					throw new ProcessException(string.Format(ProcessResources.InvalidCorrelationGuid,
+						messageProcessType.ProcessType.FullName, messageType.FullName,
+						transportMessage.CorrelationId));
+				}
+			}
+			else
+			{
+				correlationId = Guid.NewGuid();
+			}
 
-            if (result == null)
-            {
-                throw new ProcessException(string.Format(ProcessResources.IProcessManagerCastException,
-                    messageProcessType.ProcessType.FullName));
-            }
+			try
+			{
+				processInstance = _processFactory.Create(messageProcessType.ProcessType);
+			}
+			catch
+			{
+				throw new ProcessException(string.Format(ProcessResources.MissingProcessConstructor,
+					messageProcessType.ProcessType.AssemblyQualifiedName));
+			}
 
-            return result;
-        }
+			var result = processInstance as IProcessManager;
 
-        private void RegisterProcessMessage(Type messageType, Type processType, bool isStartedByMessage)
-        {
-            Guard.AgainstNull(messageType, "messageType");
-            Guard.AgainstNull(processType, "processType");
+			if (result == null)
+			{
+				throw new ProcessException(string.Format(ProcessResources.IProcessManagerCastException,
+					messageProcessType.ProcessType.FullName));
+			}
 
-            lock (Padlock)
-            {
-                if (!_mappings.ContainsKey(messageType))
-                {
-                    _mappings.Add(messageType, new List<MessageProcessType>());
-                }
+			result.CorrelationId = correlationId;
 
-                _mappings[messageType].Add(new MessageProcessType(processType, isStartedByMessage));
-            }
-        }
+			return result;
+		}
 
-        private Func<TransportMessage, object, MessageProcessType> FindResolver(Type messageType)
-        {
-            return !_resolvers.ContainsKey(messageType) ? null : _resolvers[messageType];
-        }
+		private void RegisterProcessMessage(Type messageType, Type processType, bool isStartedByMessage)
+		{
+			Guard.AgainstNull(messageType, "messageType");
+			Guard.AgainstNull(processType, "processType");
 
-        public void RegisterMappings()
-        {
-            RegisterMappings(typeof (IProcessMessageHandler<>), false);
-            RegisterMappings(typeof (IProcessStartMessageHandler<>), true);
-        }
+			lock (Padlock)
+			{
+				if (!_mappings.ContainsKey(messageType))
+				{
+					_mappings.Add(messageType, new List<MessageProcessType>());
+				}
 
-        private void RegisterMappings(Type interfaceType, bool isStartedByMessage)
-        {
-            var reflectionService = new ReflectionService();
+				_mappings[messageType].Add(new MessageProcessType(processType, isStartedByMessage));
+			}
+		}
 
-            var types = reflectionService.GetTypes(interfaceType);
+		private Func<TransportMessage, object, MessageProcessType> FindResolver(Type messageType)
+		{
+			return !_resolvers.ContainsKey(messageType) ? null : _resolvers[messageType];
+		}
 
-            foreach (var type in types)
-            {
-                foreach (var implementedInterface in type.GetInterfaces())
-                {
-                    if (!implementedInterface.IsGenericType)
-                    {
-                        continue;
-                    }
+		public void RegisterMappings()
+		{
+			RegisterMappings(typeof(IProcessMessageHandler<>), false);
+			RegisterMappings(typeof(IProcessStartMessageHandler<>), true);
+		}
 
-                    var genericArgument = implementedInterface.GetGenericArguments()[0];
+		private void RegisterMappings(Type interfaceType, bool isStartedByMessage)
+		{
+			var reflectionService = new ReflectionService();
 
-                    if (implementedInterface != interfaceType.MakeGenericType(genericArgument))
-                    {
-                        continue;
-                    }
+			var types = reflectionService.GetTypes(interfaceType);
 
-                    RegisterProcessMessage(genericArgument, type, isStartedByMessage);
-                }
-            }
-        }
-    }
+			foreach (var type in types)
+			{
+				foreach (var implementedInterface in type.GetInterfaces())
+				{
+					if (!implementedInterface.IsGenericType)
+					{
+						continue;
+					}
+
+					var genericArgument = implementedInterface.GetGenericArguments()[0];
+
+					if (implementedInterface != interfaceType.MakeGenericType(genericArgument))
+					{
+						continue;
+					}
+
+					RegisterProcessMessage(genericArgument, type, isStartedByMessage);
+				}
+			}
+		}
+
+		public static IProcessActivator Default()
+		{
+			return new DefaultProcessActivator(new DefaultProcessFactory());
+		}
+	}
 }

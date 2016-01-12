@@ -8,12 +8,7 @@ namespace Shuttle.ESB.Process.Tests
         IProcessMessageHandler<MockEMailSentEvent>,
         IProcessMessageHandler<MockCompleteMemberRegistrationCommand>
     {
-        public MockMemberRegistrationProcess(Guid correlationId)
-        {
-            CorrelationId = correlationId;
-        }
-
-        public Guid CorrelationId { get; private set; }
+        public Guid CorrelationId { get; set; }
 
         public void ProcessMessage(IProcessHandlerContext<MockCompleteMemberRegistrationCommand> context)
         {
