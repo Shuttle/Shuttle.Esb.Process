@@ -25,7 +25,7 @@ namespace Shuttle.ESB.Process
 
 		public DefaultProcessActivator(Func<Type, IProcessManager> processFactoryFunction)
 		{
-			Guard.AgainstNull(_processFactoryFunction, "processFactoryFunction");
+			Guard.AgainstNull(processFactoryFunction, "processFactoryFunction");
 
 			_processFactoryFunction = processFactoryFunction;
 		}
