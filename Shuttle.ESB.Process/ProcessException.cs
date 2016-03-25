@@ -2,10 +2,10 @@
 
 namespace Shuttle.Esb.Process
 {
-    public class ProcessException : Exception
-    {
-        public ProcessException(string message) : base(message)
-        {
-        }
-    }
+	public class ProcessException : Exception
+	{
+		public ProcessException(string message) : base(message)
+		{
+		}
+	}
 }

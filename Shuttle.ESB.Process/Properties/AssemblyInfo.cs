@@ -1,8 +1,8 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #if NET40FULL
+
 [assembly: AssemblyTitle("Shuttle.Esb.Process for .NET Framework 4.0")]
 #endif
 
@@ -26,11 +26,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Shuttle.Esb.Process for .NET Framework 4.6.1")]
 #endif
 
-[assembly: AssemblyVersion("3.1.1.0")]
+[assembly: AssemblyVersion("3.1.2.0")]
 [assembly: AssemblyCopyright("Copyright © Eben Roux 2016")]
 [assembly: AssemblyProduct("Shuttle.ESB")]
 [assembly: AssemblyCompany("Shuttle")]
 [assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyInformationalVersion("3.1.1")]
+[assembly: AssemblyInformationalVersion("3.1.2")]
 [assembly: ComVisible(false)]
-

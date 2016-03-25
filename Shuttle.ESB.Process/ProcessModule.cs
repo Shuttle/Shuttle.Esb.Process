@@ -1,72 +1,72 @@
 ﻿using System;
 using Shuttle.Core.Data;
 using Shuttle.Core.Infrastructure;
-using Shuttle.ESB.Core;
-using Shuttle.Recall.Core;
-using IModule = Shuttle.ESB.Core.IModule;
-using PipelineEventArgs = Shuttle.ESB.Core.PipelineEventArgs;
+using Shuttle.Recall;
 
 namespace Shuttle.Esb.Process
 {
-    public class ProcessModule : IModule
-    {
-        private readonly IDatabaseContextFactory _databaseContextFactory;
-        private readonly IEventStore _eventStore;
-        private readonly IKeyStore _keyStore;
-        private readonly IProcessConfiguration _configuration;
+	public class ProcessModule : IModule
+	{
+		private readonly IDatabaseContextFactory _databaseContextFactory;
+		private readonly IEventStore _eventStore;
+		private readonly IKeyStore _keyStore;
+		private readonly IProcessConfiguration _configuration;
 
-        private readonly string _startupPipelineName = typeof (StartupPipeline).FullName;
-        private IServiceBus _bus;
+		private readonly string _startupPipelineName = typeof (StartupPipeline).FullName;
+		private IServiceBus _bus;
 
-        public ProcessModule(IDatabaseContextFactory databaseContextFactory, IEventStore eventStore, IKeyStore keyStore, IProcessConfiguration configuration)
-        {
-            Guard.AgainstNull(databaseContextFactory, "databaseContextFactory");
-            Guard.AgainstNull(eventStore, "eventStore");
-            Guard.AgainstNull(keyStore, "keyStore");
-            Guard.AgainstNull(configuration, "configuration");
+		public ProcessModule(IDatabaseContextFactory databaseContextFactory, IEventStore eventStore, IKeyStore keyStore,
+			IProcessConfiguration configuration)
+		{
+			Guard.AgainstNull(databaseContextFactory, "databaseContextFactory");
+			Guard.AgainstNull(eventStore, "eventStore");
+			Guard.AgainstNull(keyStore, "keyStore");
+			Guard.AgainstNull(configuration, "configuration");
 
-            _databaseContextFactory = databaseContextFactory;
-            _eventStore = eventStore;
-            _keyStore = keyStore;
-            _configuration = configuration;
-        }
+			_databaseContextFactory = databaseContextFactory;
+			_eventStore = eventStore;
+			_keyStore = keyStore;
+			_configuration = configuration;
+		}
 
-        public void Initialize(IServiceBus bus)
-        {
-            Guard.AgainstNull(bus, "bus");
+		public void Initialize(IServiceBus bus)
+		{
+			Guard.AgainstNull(bus, "bus");
 
-            _bus = bus;
+			_bus = bus;
 
-            _bus.Events.PipelineCreated += PipelineCreated;
+			_bus.Events.PipelineCreated += PipelineCreated;
 
-            RegisterAssessors();
-        }
+			RegisterAssessors();
+		}
 
-        private void RegisterAssessors()
-        {
-            foreach (var specificationType in new ReflectionService().GetTypes<IProcessMessageAssessor>())
-            {
-                try
-                {
-                    var specificationInstance = Activator.CreateInstance(specificationType);
+		private void RegisterAssessors()
+		{
+			foreach (var specificationType in new ReflectionService().GetTypes<IProcessMessageAssessor>())
+			{
+				try
+				{
+					var specificationInstance = Activator.CreateInstance(specificationType);
 
-                    _bus.Configuration.MessageHandlingAssessor.RegisterAssessor((ISpecification<PipelineEvent>)specificationInstance);
-                }
-                catch
-                {
-                    throw new ProcessException(string.Format(ProcessResources.MissingProcessAssessorConstructor, specificationType.AssemblyQualifiedName));
-                }
-            }
-        }
+					_bus.Configuration.MessageHandlingAssessor.RegisterAssessor((ISpecification<PipelineEvent>) specificationInstance);
+				}
+				catch
+				{
+					throw new ProcessException(string.Format(ProcessResources.MissingProcessAssessorConstructor,
+						specificationType.AssemblyQualifiedName));
+				}
+			}
+		}
 
-        private void PipelineCreated(object sender, PipelineEventArgs e)
-        {
-            if (!e.Pipeline.GetType().FullName.Equals(_startupPipelineName, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return;
-            }
+		private void PipelineCreated(object sender, PipelineEventArgs e)
+		{
+			if (!e.Pipeline.GetType().FullName.Equals(_startupPipelineName, StringComparison.InvariantCultureIgnoreCase))
+			{
+				return;
+			}
 
-            e.Pipeline.RegisterObserver(new ProcessConfigurationObserver(_databaseContextFactory, _eventStore, _keyStore, _configuration));
-        }
-    }
+			e.Pipeline.RegisterObserver(new ProcessConfigurationObserver(_databaseContextFactory, _eventStore, _keyStore,
+				_configuration));
+		}
+	}
 }

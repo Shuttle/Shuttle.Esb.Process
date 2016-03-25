@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Shuttle.Core.Infrastructure;
-using Shuttle.ESB.Core;
 
 namespace Shuttle.Esb.Process
 {
@@ -20,7 +19,7 @@ namespace Shuttle.Esb.Process
 
 		public DefaultProcessActivator()
 		{
-			_processFactoryFunction = type => (IProcessManager)Activator.CreateInstance(type);
+			_processFactoryFunction = type => (IProcessManager) Activator.CreateInstance(type);
 		}
 
 		public DefaultProcessActivator(Func<Type, IProcessManager> processFactoryFunction)
@@ -35,14 +34,14 @@ namespace Shuttle.Esb.Process
 		{
 			Guard.AgainstNull(resolver, "resolver");
 
-			_resolvers.Add(typeof(TMessageType), resolver);
+			_resolvers.Add(typeof (TMessageType), resolver);
 
 			return this;
 		}
 
 		public IProcessActivator RegisterProcessMessage<TMessageType, TProcessType>()
 		{
-			RegisterProcessMessage(typeof(TMessageType), typeof(TProcessType));
+			RegisterProcessMessage(typeof (TMessageType), typeof (TProcessType));
 
 			return this;
 		}
@@ -56,7 +55,7 @@ namespace Shuttle.Esb.Process
 
 		public IProcessActivator RegisterProcessStartMessage<TMessageType, TProcessType>()
 		{
-			RegisterProcessStartMessage(typeof(TMessageType), typeof(TProcessType));
+			RegisterProcessStartMessage(typeof (TMessageType), typeof (TProcessType));
 
 			return this;
 		}
@@ -153,7 +152,8 @@ namespace Shuttle.Esb.Process
 			}
 			catch
 			{
-				throw new ProcessException(string.Format(ProcessResources.ProcessFactoryFunctionException, messageProcessType.ProcessType.AssemblyQualifiedName));
+				throw new ProcessException(string.Format(ProcessResources.ProcessFactoryFunctionException,
+					messageProcessType.ProcessType.AssemblyQualifiedName));
 			}
 
 			var result = processInstance;
@@ -186,8 +186,8 @@ namespace Shuttle.Esb.Process
 
 		public void RegisterMappings()
 		{
-			RegisterMappings(typeof(IProcessMessageHandler<>), false);
-			RegisterMappings(typeof(IProcessStartMessageHandler<>), true);
+			RegisterMappings(typeof (IProcessMessageHandler<>), false);
+			RegisterMappings(typeof (IProcessStartMessageHandler<>), true);
 		}
 
 		private void RegisterMappings(Type interfaceType, bool isStartedByMessage)

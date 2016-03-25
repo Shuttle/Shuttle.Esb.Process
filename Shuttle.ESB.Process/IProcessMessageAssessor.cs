@@ -2,7 +2,7 @@
 
 namespace Shuttle.Esb.Process
 {
-    public interface IProcessMessageAssessor : ISpecification<PipelineEvent>
-    {
-    }
+	public interface IProcessMessageAssessor : ISpecification<PipelineEvent>
+	{
+	}
 }

@@ -2,8 +2,8 @@
 
 namespace Shuttle.Esb.Process
 {
-    public interface IProcessManager
-    {
-        Guid CorrelationId { get; set; } 
-    }
+	public interface IProcessManager
+	{
+		Guid CorrelationId { get; set; }
+	}
 }
