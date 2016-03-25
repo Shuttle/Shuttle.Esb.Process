@@ -4,7 +4,7 @@ using Shuttle.Core.Infrastructure;
 using Shuttle.ESB.Core;
 using Shuttle.Recall.Core;
 
-namespace Shuttle.ESB.Process
+namespace Shuttle.Esb.Process
 {
     public class ProcessMessageHandlerInvoker : IMessageHandlerInvoker
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{3182A226-B4B1-43B2-A306-C6CE9AB79432}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Shuttle.ESB.Process.Tests</RootNamespace>
-    <AssemblyName>Shuttle.ESB.Process.Tests</AssemblyName>
+    <RootNamespace>Shuttle.Esb.Process.Tests</RootNamespace>
+    <AssemblyName>Shuttle.Esb.Process.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -62,9 +62,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shuttle.ESB.Process\Shuttle.ESB.Process.csproj">
+    <ProjectReference Include="..\Shuttle.Esb.Process\Shuttle.Esb.Process.csproj">
       <Project>{2578701E-A8A6-4F80-BB22-F7636C350430}</Project>
-      <Name>Shuttle.ESB.Process</Name>
+      <Name>Shuttle.Esb.Process</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

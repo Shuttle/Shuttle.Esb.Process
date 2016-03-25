@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Shuttle.ESB.Process {
+namespace Shuttle.Esb.Process {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Shuttle.ESB.Process {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Shuttle.ESB.Process.ProcessResources", typeof(ProcessResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Shuttle.Esb.Process.ProcessResources", typeof(ProcessResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

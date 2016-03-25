@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Shuttle.ESB.Process.Tests
+namespace Shuttle.Esb.Process.Tests
 {
     public class MockMemberRegistrationProcess :
         IProcessManager,

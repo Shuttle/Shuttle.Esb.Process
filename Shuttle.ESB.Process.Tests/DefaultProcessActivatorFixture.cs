@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Shuttle.ESB.Core;
 
-namespace Shuttle.ESB.Process.Tests
+namespace Shuttle.Esb.Process.Tests
 {
     [TestFixture]
     public class DefaultProcessActivatorFixture

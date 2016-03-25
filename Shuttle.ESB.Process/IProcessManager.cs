@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Shuttle.ESB.Process
+namespace Shuttle.Esb.Process
 {
     public interface IProcessManager
     {

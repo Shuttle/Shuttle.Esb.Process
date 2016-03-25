@@ -1,7 +1,7 @@
 ﻿using System;
 using Shuttle.ESB.Core;
 
-namespace Shuttle.ESB.Process
+namespace Shuttle.Esb.Process
 {
     public interface IProcessActivator
     {

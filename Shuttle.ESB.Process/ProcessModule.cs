@@ -6,7 +6,7 @@ using Shuttle.Recall.Core;
 using IModule = Shuttle.ESB.Core.IModule;
 using PipelineEventArgs = Shuttle.ESB.Core.PipelineEventArgs;
 
-namespace Shuttle.ESB.Process
+namespace Shuttle.Esb.Process
 {
     public class ProcessModule : IModule
     {

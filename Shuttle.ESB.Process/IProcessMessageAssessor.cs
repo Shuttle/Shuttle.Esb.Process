@@ -1,6 +1,6 @@
 ﻿using Shuttle.Core.Infrastructure;
 
-namespace Shuttle.ESB.Process
+namespace Shuttle.Esb.Process
 {
     public interface IProcessMessageAssessor : ISpecification<PipelineEvent>
     {

@@ -1,4 +1,4 @@
-﻿namespace Shuttle.ESB.Process
+﻿namespace Shuttle.Esb.Process
 {
     public interface IProcessStartMessageHandler<T> where T : class
     {

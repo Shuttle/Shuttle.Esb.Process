@@ -7,8 +7,8 @@
     <ProjectGuid>{2578701E-A8A6-4F80-BB22-F7636C350430}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Shuttle.ESB.Process</RootNamespace>
-    <AssemblyName>Shuttle.ESB.Process</AssemblyName>
+    <RootNamespace>Shuttle.Esb.Process</RootNamespace>
+    <AssemblyName>Shuttle.Esb.Process</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
   </PropertyGroup>

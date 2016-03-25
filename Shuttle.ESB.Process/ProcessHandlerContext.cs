@@ -2,7 +2,7 @@
 using Shuttle.ESB.Core;
 using Shuttle.Recall.Core;
 
-namespace Shuttle.ESB.Process
+namespace Shuttle.Esb.Process
 {
     public class ProcessHandlerContext<T> : HandlerContext<T>, IProcessHandlerContext<T> where T : class
     {
