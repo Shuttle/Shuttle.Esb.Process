@@ -60,7 +60,7 @@ namespace Shuttle.Esb.Process
 			if (method == null)
 			{
 				throw new ProcessMessageMethodMissingException(string.Format(
-					ESBResources.ProcessMessageMethodMissingException,
+					EsbResources.ProcessMessageMethodMissingException,
 					processInstance.GetType().FullName,
 					messageType.FullName));
 			}

@@ -27,6 +27,6 @@ using System.Runtime.InteropServices;
 #endif
 
 [assembly: AssemblyCopyright("Copyright © Eben Roux 2016")]
-[assembly: AssemblyProduct("Shuttle.ESB")]
+[assembly: AssemblyProduct("Shuttle.Esb")]
 [assembly: AssemblyCompany("Shuttle")]
 [assembly: ComVisible(false)]
