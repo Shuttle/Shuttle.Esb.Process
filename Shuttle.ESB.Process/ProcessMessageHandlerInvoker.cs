@@ -30,7 +30,7 @@ namespace Shuttle.Esb.Process
 			_defaultMessageHandlerInvoker = new DefaultMessageHandlerInvoker();
 		}
 
-		public MessageHandlerInvokeResult Invoke(PipelineEvent pipelineEvent)
+		public MessageHandlerInvokeResult Invoke(IPipelineEvent pipelineEvent)
 		{
 			var state = pipelineEvent.Pipeline.State;
 			var transportMessage = state.GetTransportMessage();

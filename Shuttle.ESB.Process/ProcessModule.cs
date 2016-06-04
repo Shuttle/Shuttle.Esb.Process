@@ -48,7 +48,7 @@ namespace Shuttle.Esb.Process
 				{
 					var specificationInstance = Activator.CreateInstance(specificationType);
 
-					_bus.Configuration.MessageHandlingAssessor.RegisterAssessor((ISpecification<PipelineEvent>) specificationInstance);
+					_bus.Configuration.MessageHandlingAssessor.RegisterAssessor((ISpecification<IPipelineEvent>) specificationInstance);
 				}
 				catch
 				{
