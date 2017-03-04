@@ -57,29 +57,30 @@
     <DefineConstants>$(DefineConstants);NET461FULL</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Shuttle.Core.Data, Version=4.1.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shuttle.Core.Data.4.1.3\lib\net40-full\Shuttle.Core.Data.dll</HintPath>
+    <Reference Include="Shuttle.Core.Data, Version=4.2.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shuttle.Core.Data.4.2.11\lib\net40-full\Shuttle.Core.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Shuttle.Core.Infrastructure, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shuttle.Core.Infrastructure.4.2.0\lib\net40-full\Shuttle.Core.Infrastructure.dll</HintPath>
+    <Reference Include="Shuttle.Core.Infrastructure, Version=4.2.65.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shuttle.Core.Infrastructure.4.2.65\lib\net40-full\Shuttle.Core.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Shuttle.Esb, Version=6.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shuttle.Esb.6.1.1\lib\net40-full\Shuttle.Esb.dll</HintPath>
+    <Reference Include="Shuttle.Esb, Version=7.0.54.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shuttle.Esb.7.0.54\lib\net40-full\Shuttle.Esb.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Shuttle.Recall, Version=3.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shuttle.Recall.3.6.2\lib\net40-full\Shuttle.Recall.dll</HintPath>
+    <Reference Include="Shuttle.Recall, Version=7.0.64.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shuttle.Recall.7.0.64\lib\net40-full\Shuttle.Recall.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Shuttle.Recall.SqlServer, Version=1.8.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Shuttle.Recall.SqlServer.1.8.5\lib\net40-full\Shuttle.Recall.SqlServer.dll</HintPath>
+    <Reference Include="Shuttle.Recall.Sql, Version=4.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Shuttle.Recall.Sql.4.0.5\lib\net40-full\Shuttle.Recall.Sql.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IProcessHandlerContext.cs" />
@@ -91,12 +92,10 @@
     <Compile Include="IProcessMessageHandler.cs" />
     <Compile Include="DefaultProcessActivator.cs" />
     <Compile Include="ProcessConfiguration.cs" />
-    <Compile Include="ProcessConfigurationObserver.cs" />
     <Compile Include="ProcessException.cs" />
     <Compile Include="ProcessHandlerContext.cs" />
     <Compile Include="ProcessMessageHandlerInvoker.cs" />
     <Compile Include="MessageProcessType.cs" />
-    <Compile Include="ProcessModule.cs" />
     <Compile Include="ProcessResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
