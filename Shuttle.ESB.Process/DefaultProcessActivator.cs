@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Shuttle.Core.Infrastructure;
+using Shuttle.Core.Contract;
+using Shuttle.Core.Reflection;
 
 namespace Shuttle.Esb.Process
 {
@@ -90,7 +91,7 @@ namespace Shuttle.Esb.Process
 
 			var resolver = FindResolver(messageType);
 
-			return resolver != null && resolver.Invoke(transportMessage, message) != null;
+			return resolver?.Invoke(transportMessage, message) != null;
 		}
 
 		public IProcessManager Create(TransportMessage transportMessage, object message)
@@ -121,9 +122,9 @@ namespace Shuttle.Esb.Process
 				if (resolver == null)
 				{
 					throw new ProcessException(mappings.Count > 1
-						? string.Format(ProcessResources.ResolverRequiredForMultipleMappingsException,
+						? string.Format(Resources.ResolverRequiredForMultipleMappingsException,
 							messageType.FullName)
-						: string.Format(ProcessResources.ResolverRequiredForNoMappingException, messageType.FullName));
+						: string.Format(Resources.ResolverRequiredForNoMappingException, messageType.FullName));
 				}
 
 				messageProcessType = resolver.Invoke(transportMessage, message);
@@ -136,7 +137,7 @@ namespace Shuttle.Esb.Process
 			{
 				if (!Guid.TryParse(transportMessage.CorrelationId, out correlationId))
 				{
-					throw new ProcessException(string.Format(ProcessResources.InvalidCorrelationGuid,
+					throw new ProcessException(string.Format(Resources.InvalidCorrelationGuid,
 						messageProcessType.ProcessType.FullName, messageType.FullName,
 						transportMessage.CorrelationId));
 				}
@@ -152,7 +153,7 @@ namespace Shuttle.Esb.Process
 			}
 			catch
 			{
-				throw new ProcessException(string.Format(ProcessResources.ProcessFactoryFunctionException,
+				throw new ProcessException(string.Format(Resources.ProcessFactoryFunctionException,
 					messageProcessType.ProcessType.AssemblyQualifiedName));
 			}
 
@@ -194,7 +195,7 @@ namespace Shuttle.Esb.Process
 		{
 			var reflectionService = new ReflectionService();
 
-			var types = reflectionService.GetTypes(interfaceType);
+			var types = reflectionService.GetTypesAssignableTo(interfaceType);
 
 			foreach (var type in types)
 			{

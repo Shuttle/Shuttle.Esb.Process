@@ -1,4 +1,5 @@
-﻿using Shuttle.Core.Infrastructure;
+﻿using Shuttle.Core.Container;
+using Shuttle.Core.Contract;
 
 namespace Shuttle.Esb.Process
 {
@@ -18,8 +19,12 @@ namespace Shuttle.Esb.Process
 				return;
 			}
 
-			registry.AttemptRegister<IProcessConfiguration>(ProcessSection.Configuration());
-			registry.AttemptRegister<IProcessActivator, DefaultProcessActivator>();
+		    if (!registry.IsRegistered<IProcessConfiguration>())
+		    {
+		        registry.AttemptRegisterInstance<IProcessConfiguration>(ProcessSection.Configuration());
+		    }
+
+		    registry.AttemptRegister<IProcessActivator, DefaultProcessActivator>();
 			registry.AttemptRegister<IMessageHandlerInvoker, ProcessMessageHandlerInvoker>();
 
 			_registryBootstrapCalled = true;
@@ -34,9 +39,7 @@ namespace Shuttle.Esb.Process
 				return;
 			}
 
-			var processActivator = resolver.Resolve<IProcessActivator>() as DefaultProcessActivator;
-
-			if (processActivator != null)
+		    if (resolver.Resolve<IProcessActivator>() is DefaultProcessActivator processActivator)
 			{
 				processActivator.RegisterMappings();
 			}

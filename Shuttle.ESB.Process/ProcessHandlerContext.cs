@@ -1,4 +1,5 @@
-﻿using Shuttle.Core.Infrastructure;
+﻿using Shuttle.Core.Pipelines;
+using Shuttle.Core.Threading;
 using Shuttle.Recall;
 
 namespace Shuttle.Esb.Process

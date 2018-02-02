@@ -9,14 +9,14 @@
 		<projectUrl>https://github.com/shuttle/Shuttle.Esb.Process</projectUrl>
 		<iconUrl>https://raw.githubusercontent.com/Shuttle/Shuttle.Esb.Process/master/.media/logo.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>Shuttle.Esb process management using Shuttle.Recall event sourcing.</description>
+	  <description>Shuttle.Esb process management using Shuttle.Recall event sourcing.</description>
 		<releaseNotes/>
 		<copyright>Copyright (c) {year}, Eben Roux</copyright>
-    <tags>shuttle-esb shuttle-esb-process enterprise-service-bus esb messaging service-bus soa sagas process-manager bpm process</tags>
-    <dependencies>
-      <dependency id="Shuttle.Core.Data" version="{Shuttle.Core.Data-version}" />
-      <dependency id="Shuttle.Esb" version="{Shuttle.Esb-version}" />
-      <dependency id="Shuttle.Recall" version="{Shuttle.Recall-version}" />
-    </dependencies>
-  </metadata>
+	  <tags>shuttle shuttle.esb shuttle.recall process processmanager processmanagement saga</tags>
+	  <dependencies>
+	    <dependency id="Shuttle.Core.Data" version="{Shuttle.Core.Data-version}" />
+	    <dependency id="Shuttle.Esb" version="{Shuttle.Esb-version}" />
+	    <dependency id="Shuttle.Recall" version="{Shuttle.Recall-version}" />
+	  </dependencies>
+	</metadata>
 </package>

@@ -1,6 +1,9 @@
 ﻿using System;
+using Shuttle.Core.Contract;
 using Shuttle.Core.Data;
-using Shuttle.Core.Infrastructure;
+using Shuttle.Core.Pipelines;
+using Shuttle.Core.Reflection;
+using Shuttle.Core.Specification;
 using Shuttle.Recall;
 
 namespace Shuttle.Esb.Process
@@ -43,7 +46,7 @@ namespace Shuttle.Esb.Process
 
             _defaultMessageHandlerInvoker = new DefaultMessageHandlerInvoker(serviceBusConfiguration);
 
-            foreach (var type in new ReflectionService().GetTypes<IProcessMessageAssessor>())
+            foreach (var type in new ReflectionService().GetTypesAssignableTo<IProcessMessageAssessor>())
             {
                 try
                 {
@@ -53,7 +56,7 @@ namespace Shuttle.Esb.Process
                 }
                 catch
                 {
-                    throw new ProcessException(string.Format(ProcessResources.MissingProcessAssessorConstructor,
+                    throw new ProcessException(string.Format(Resources.MissingProcessAssessorConstructor,
                         type.AssemblyQualifiedName));
                 }
             }
@@ -89,7 +92,7 @@ namespace Shuttle.Esb.Process
             if (method == null)
             {
                 throw new ProcessMessageMethodMissingException(string.Format(
-                    EsbResources.ProcessMessageMethodMissingException,
+                    Resources.ProcessMessageMethodMissingException,
                     processInstance.GetType().FullName,
                     messageType.FullName));
             }

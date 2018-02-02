@@ -137,4 +137,8 @@
     <value>Process assessor type with AssemblyQualifiedName '{0}' does not have a default constructor.</value>
     <comment>{0} = assembly qualified name of assessor type</comment>
   </data>
+  <data name="ProcessMessageMethodMissingException" xml:space="preserve">
+    <value>Handler type '{0}' does not have the required ProcessMessage method that handles message type '{1}'.</value>
+    <comment>{0} = handler full type name, {1} = message full type name</comment>
+  </data>
 </root>
