@@ -8,6 +8,7 @@
 		<licenseUrl>https://github.com/shuttle/Shuttle.Esb.Process/raw/master/LICENSE</licenseUrl>
 		<projectUrl>https://github.com/shuttle/Shuttle.Esb.Process</projectUrl>
 		<iconUrl>https://raw.githubusercontent.com/Shuttle/Shuttle.Esb.Process/master/.media/logo.png</iconUrl>
+	  <repository type="git" url="https://github.com/Shuttle/Shuttle.Esb.Process.git" />
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 	  <description>Shuttle.Esb process management using Shuttle.Recall event sourcing.</description>
 		<releaseNotes/>
