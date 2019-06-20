@@ -1,4 +1,5 @@
-﻿using Shuttle.Core.Pipelines;
+﻿using System.Threading;
+using Shuttle.Core.Pipelines;
 using Shuttle.Core.Threading;
 using Shuttle.Recall;
 
@@ -8,17 +9,12 @@ namespace Shuttle.Esb.Process
 	{
 		public ProcessHandlerContext(IServiceBusConfiguration configuration, ITransportMessageFactory transportMessageFactory,
 			IPipelineFactory pipelineFactory, ISubscriptionManager subscriptionManager, TransportMessage transportMessage,
-			T message, IThreadState activeState,
-			IKeyStore keyStore, EventStream stream) :
-			base(
-				configuration, transportMessageFactory, pipelineFactory, subscriptionManager, transportMessage, message, activeState
-			)
+			T message, CancellationToken cancellationToken, EventStream stream) :
+			base(transportMessageFactory, pipelineFactory, subscriptionManager, transportMessage, message, cancellationToken)
 		{
-			KeyStore = keyStore;
 			Stream = stream;
 		}
 
-		public IKeyStore KeyStore { get; }
 		public EventStream Stream { get; }
 	}
 }

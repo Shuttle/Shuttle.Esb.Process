@@ -11,21 +11,19 @@ namespace Shuttle.Esb.Process
     public class ProcessMessageHandlerInvoker : IMessageHandlerInvoker
     {
         private readonly IDatabaseContextFactory _databaseContextFactory;
-        private readonly IMessageHandlerInvoker _defaultMessageHandlerInvoker;
+        private readonly IMessageHandlerInvoker _messageHandlerInvoker;
         private readonly IEventStore _eventStore;
-        private readonly IKeyStore _keyStore;
         private readonly IPipelineFactory _pipelineFactory;
         private readonly IProcessConfiguration _processConfiguration;
         private readonly IProcessActivator _processActivator;
-        private readonly IServiceBusConfiguration _serviceBusConfiguration;
         private readonly ITransportMessageFactory _transportMessageFactory;
         private readonly ISubscriptionManager _subscriptionManager;
 
-        public ProcessMessageHandlerInvoker(IProcessConfiguration processConfiguration, IProcessActivator processActivator, IServiceBusConfiguration serviceBusConfiguration, ITransportMessageFactory transportMessageFactory, IPipelineFactory pipelineFactory, ISubscriptionManager subscriptionManager, IDatabaseContextFactory databaseContextFactory, IEventStore eventStore, IKeyStore keyStore, IMessageHandlingAssessor messageHandlingAssessor)
+        public ProcessMessageHandlerInvoker(IMessageHandlerInvoker messageHandlerInvoker, IProcessConfiguration processConfiguration, IProcessActivator processActivator, ITransportMessageFactory transportMessageFactory, IPipelineFactory pipelineFactory, ISubscriptionManager subscriptionManager, IDatabaseContextFactory databaseContextFactory, IEventStore eventStore, IMessageHandlingAssessor messageHandlingAssessor)
         {
+            Guard.AgainstNull(messageHandlerInvoker, "messageHandlerInvoker");
             Guard.AgainstNull(processConfiguration, "processConfiguration");
             Guard.AgainstNull(processActivator, "processActivator");
-            Guard.AgainstNull(serviceBusConfiguration, "serviceBusConfiguration");
             Guard.AgainstNull(transportMessageFactory, "transportMessageFactory");
             Guard.AgainstNull(pipelineFactory, "pipelineFactory");
             Guard.AgainstNull(subscriptionManager, "subscriptionManager");
@@ -34,17 +32,14 @@ namespace Shuttle.Esb.Process
             Guard.AgainstNull(eventStore, "keyStore");
             Guard.AgainstNull(messageHandlingAssessor, "messageHandlingAssessor");
 
-            _serviceBusConfiguration = serviceBusConfiguration;
             _transportMessageFactory = transportMessageFactory;
             _pipelineFactory = pipelineFactory;
             _subscriptionManager = subscriptionManager;
             _databaseContextFactory = databaseContextFactory;
             _eventStore = eventStore;
-            _keyStore = keyStore;
             _processConfiguration = processConfiguration;
             _processActivator = processActivator;
-
-            _defaultMessageHandlerInvoker = new DefaultMessageHandlerInvoker(serviceBusConfiguration);
+            _messageHandlerInvoker = messageHandlerInvoker;
 
             foreach (var type in new ReflectionService().GetTypesAssignableTo<IProcessMessageAssessor>())
             {
@@ -70,7 +65,7 @@ namespace Shuttle.Esb.Process
 
             if (!_processActivator.IsProcessMessage(transportMessage, message))
             {
-                return _defaultMessageHandlerInvoker.Invoke(pipelineEvent);
+                return _messageHandlerInvoker.Invoke(pipelineEvent);
             }
 
             var processInstance = _processActivator.Create(transportMessage, message);
@@ -97,8 +92,8 @@ namespace Shuttle.Esb.Process
                     messageType.FullName));
             }
 
-            var handlerContext = Activator.CreateInstance(contextType, _serviceBusConfiguration, _transportMessageFactory, _pipelineFactory,
-                _subscriptionManager, transportMessage, message, state.GetActiveState(), _keyStore, stream);
+            var handlerContext = Activator.CreateInstance(contextType, _transportMessageFactory, _pipelineFactory,
+                _subscriptionManager, transportMessage, message, state.GetCancellationToken(), stream);
 
             method.Invoke(processInstance, new[] { handlerContext });
 
