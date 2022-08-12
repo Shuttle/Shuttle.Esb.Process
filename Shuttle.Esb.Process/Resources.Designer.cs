@@ -19,7 +19,7 @@ namespace Shuttle.Esb.Process {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -57,6 +57,24 @@ namespace Shuttle.Esb.Process {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not load assembly from name &apos;{0}&apos;..
+        /// </summary>
+        public static string AssemblyNameException {
+            get {
+                return ResourceManager.GetString("AssemblyNameException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option &apos;ConnectionStringName&apos; has not been specified..
+        /// </summary>
+        public static string ConnectionStringNameException {
+            get {
+                return ResourceManager.GetString("ConnectionStringNameException", resourceCulture);
             }
         }
         

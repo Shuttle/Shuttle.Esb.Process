@@ -119,26 +119,33 @@
   </resheader>
   <data name="InvalidCorrelationGuid" xml:space="preserve">
     <value>Process type '{0}' cannot process message type '{1}' since the correlation id of '{2}' is not a valid guid.</value>
-    <comment>{0} = full type name of the process type, {1} = full type name of the message, {2} = the correlation id of the transport message</comment>
+    <comment>0 = full type name of the process type, 1 = full type name of the message, 2 = the correlation id of the transport message</comment>
   </data>
   <data name="ProcessFactoryFunctionException" xml:space="preserve">
     <value>Process type with AssemblyQualifiedName '{0}' could not be instantiated.</value>
-    <comment>{0} = assembly qualified name of process type</comment>
+    <comment>0 = assembly qualified name of process type</comment>
   </data>
   <data name="ResolverRequiredForMultipleMappingsException" xml:space="preserve">
     <value>Message type '{0}' maps to more than one process type.  You will need to register a resolver to determine which type of process to instantiate.</value>
-    <comment>{0} = full type name of the message</comment>
+    <comment>0 = full type name of the message</comment>
   </data>
   <data name="ResolverRequiredForNoMappingException" xml:space="preserve">
     <value>Message type '{0}' does not map to any process type.  You will need to register a resolver to determine which type of process to instantiate or add a mapping.</value>
-    <comment>{0} = full type name of the message</comment>
+    <comment>0 = full type name of the message</comment>
   </data>
   <data name="MissingProcessAssessorConstructor" xml:space="preserve">
     <value>Process assessor type with AssemblyQualifiedName '{0}' does not have a default constructor.</value>
-    <comment>{0} = assembly qualified name of assessor type</comment>
+    <comment>0 = assembly qualified name of assessor type</comment>
   </data>
   <data name="ProcessMessageMethodMissingException" xml:space="preserve">
     <value>Handler type '{0}' does not have the required ProcessMessage method that handles message type '{1}'.</value>
-    <comment>{0} = handler full type name, {1} = message full type name</comment>
+    <comment>0 = handler full type name, 1 = message full type name</comment>
+  </data>
+  <data name="ConnectionStringNameException" xml:space="preserve">
+    <value>Option 'ConnectionStringName' has not been specified.</value>
+  </data>
+  <data name="AssemblyNameException" xml:space="preserve">
+    <value>Could not load assembly from name '{0}'.</value>
+    <comment>0 = assembly name that failed to load</comment>
   </data>
 </root>

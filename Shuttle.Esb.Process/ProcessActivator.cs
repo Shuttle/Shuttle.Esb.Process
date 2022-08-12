@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
+using Microsoft.Extensions.Options;
 using Shuttle.Core.Contract;
 using Shuttle.Core.Reflection;
 
 namespace Shuttle.Esb.Process
 {
-	public class DefaultProcessActivator : IProcessActivator
+	public class ProcessActivator : IProcessActivator
 	{
 		private static readonly List<MessageProcessType> EmptyMappings = new List<MessageProcessType>();
 		private static readonly object Padlock = new object();
@@ -17,23 +19,28 @@ namespace Shuttle.Esb.Process
 			new Dictionary<Type, Func<TransportMessage, object, MessageProcessType>>();
 
 		private readonly Func<Type, IProcessManager> _processFactoryFunction;
+		private readonly ReflectionService _reflectionService = new ReflectionService();
 
-		public DefaultProcessActivator()
+		public ProcessActivator(IOptions<ProcessManagementOptions> processManagementOptions)
 		{
+			Guard.AgainstNull(processManagementOptions, nameof(processManagementOptions));
+			Guard.AgainstNull(processManagementOptions.Value, nameof(processManagementOptions.Value));
+
 			_processFactoryFunction = type => (IProcessManager) Activator.CreateInstance(type);
-		}
 
-		public DefaultProcessActivator(Func<Type, IProcessManager> processFactoryFunction)
-		{
-			Guard.AgainstNull(processFactoryFunction, "processFactoryFunction");
+			foreach (var assemblyName in processManagementOptions.Value.AssemblyNames)
+			{
+				var assembly = Assembly.Load(assemblyName);
 
-			_processFactoryFunction = processFactoryFunction;
+				RegisterMappings(assembly, typeof(IProcessMessageHandler<>), false);
+				RegisterMappings(assembly, typeof(IProcessStartMessageHandler<>), true);
+			}
 		}
 
 		public IProcessActivator RegisterResolver<TMessageType>(
 			Func<TransportMessage, object, MessageProcessType> resolver)
 		{
-			Guard.AgainstNull(resolver, "resolver");
+			Guard.AgainstNull(resolver, nameof(resolver));
 
 			_resolvers.Add(typeof (TMessageType), resolver);
 
@@ -70,8 +77,8 @@ namespace Shuttle.Esb.Process
 
 		public bool IsProcessMessage(TransportMessage transportMessage, object message)
 		{
-			Guard.AgainstNull(transportMessage, "transportMessage");
-			Guard.AgainstNull(message, "message");
+			Guard.AgainstNull(transportMessage, nameof(transportMessage));
+			Guard.AgainstNull(message, nameof(message));
 
 			var messageType = message.GetType();
 
@@ -96,8 +103,8 @@ namespace Shuttle.Esb.Process
 
 		public IProcessManager Create(TransportMessage transportMessage, object message)
 		{
-			Guard.AgainstNull(transportMessage, "transportMessage");
-			Guard.AgainstNull(message, "message");
+			Guard.AgainstNull(transportMessage, nameof(transportMessage));
+			Guard.AgainstNull(message, nameof(message));
 
 			var messageType = message.GetType();
 			List<MessageProcessType> mappings;
@@ -166,8 +173,8 @@ namespace Shuttle.Esb.Process
 
 		private void RegisterProcessMessage(Type messageType, Type processType, bool isStartedByMessage)
 		{
-			Guard.AgainstNull(messageType, "messageType");
-			Guard.AgainstNull(processType, "processType");
+			Guard.AgainstNull(messageType, nameof(messageType));
+			Guard.AgainstNull(processType, nameof(processType));
 
 			lock (Padlock)
 			{
@@ -185,17 +192,9 @@ namespace Shuttle.Esb.Process
 			return !_resolvers.ContainsKey(messageType) ? null : _resolvers[messageType];
 		}
 
-		public void RegisterMappings()
+		private void RegisterMappings(Assembly assembly, Type interfaceType, bool isStartedByMessage)
 		{
-			RegisterMappings(typeof (IProcessMessageHandler<>), false);
-			RegisterMappings(typeof (IProcessStartMessageHandler<>), true);
-		}
-
-		private void RegisterMappings(Type interfaceType, bool isStartedByMessage)
-		{
-			var reflectionService = new ReflectionService();
-
-			var types = reflectionService.GetTypesAssignableTo(interfaceType);
+			var types = _reflectionService.GetTypesAssignableTo(interfaceType, assembly);
 
 			foreach (var type in types)
 			{
