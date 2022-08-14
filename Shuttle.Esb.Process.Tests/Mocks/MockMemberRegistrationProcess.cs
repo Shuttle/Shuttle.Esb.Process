@@ -4,23 +4,23 @@ namespace Shuttle.Esb.Process.Tests
 {
 	public class MockMemberRegistrationProcess :
 		IProcessManager,
-		IProcessStartMessageHandler<MockRegisterMemberCommand>,
-		IProcessMessageHandler<MockEMailSentEvent>,
-		IProcessMessageHandler<MockCompleteMemberRegistrationCommand>
+		IProcessStartMessageHandler<MockRegisterMember>,
+		IProcessMessageHandler<MockEMailSent>,
+		IProcessMessageHandler<MockCompleteMemberRegistration>
 	{
 		public Guid CorrelationId { get; set; }
 
-		public void ProcessMessage(IProcessHandlerContext<MockCompleteMemberRegistrationCommand> context)
+		public void ProcessMessage(IProcessHandlerContext<MockCompleteMemberRegistration> context)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void ProcessMessage(IProcessHandlerContext<MockEMailSentEvent> context)
+		public void ProcessMessage(IProcessHandlerContext<MockEMailSent> context)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void ProcessMessage(IProcessHandlerContext<MockRegisterMemberCommand> context)
+		public void ProcessMessage(IProcessHandlerContext<MockRegisterMember> context)
 		{
 			throw new NotImplementedException();
 		}

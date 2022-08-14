@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Options;
 using Shuttle.Core.Contract;
@@ -52,9 +54,15 @@ namespace Shuttle.Esb.Process
 
             var reflectionService = new ReflectionService();
 
-            foreach (var assemblyName in processManagementOptions.Value.AssemblyNames)
+            var assemblies = new List<Assembly>();
+
+            assemblies.AddRange((processManagementOptions.Value.AssemblyNames ?? Enumerable.Empty<string>()).Any()
+                ? processManagementOptions.Value.AssemblyNames.Select(Assembly.Load)
+                : new ReflectionService().GetRuntimeAssemblies());
+
+            foreach (var assembly in assemblies)
             {
-                foreach (var type in reflectionService.GetTypesAssignableTo<IProcessMessageAssessor>(Assembly.Load(assemblyName)))
+                foreach (var type in reflectionService.GetTypesAssignableTo<IProcessMessageAssessor>(assembly))
                 {
                     try
                     {

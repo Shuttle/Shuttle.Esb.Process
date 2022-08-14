@@ -19,12 +19,12 @@ namespace Shuttle.Esb.Process.Tests
 
 			Assert.IsFalse(activator.IsProcessMessage(transportMessage, new MockNullCommand()));
 
-			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockRegisterOrderCommand()));
-			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockEMailSentEvent()));
-			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockCompleteOrderCommand()));
+			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockRegisterOrder()));
+			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockEMailSent()));
+			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockCompleteOrder()));
 
-			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockRegisterMemberCommand()));
-			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockCompleteMemberRegistrationCommand()));
+			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockRegisterMember()));
+			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockCompleteMemberRegistration()));
 		}
 
 		[Test]
@@ -40,10 +40,10 @@ namespace Shuttle.Esb.Process.Tests
 
 			var activator = new ProcessActivator(Options.Create(processManagementOptions));
 
-			activator.RegisterResolver<MockEMailSentEvent>(
+			activator.RegisterResolver<MockEMailSent>(
 				(transport, message) => new MessageProcessType(typeof (MockOrderProcess), false));
 
-			var instance = activator.Create(transportMessage, new MockEMailSentEvent());
+			var instance = activator.Create(transportMessage, new MockEMailSent());
 
 			Assert.IsTrue(instance.GetType() == typeof (MockOrderProcess));
 		}
@@ -59,9 +59,9 @@ namespace Shuttle.Esb.Process.Tests
 			var activator = new ProcessActivator(Options.Create(processManagementOptions));
 
 			Assert.IsTrue(typeof (MockOrderProcess) ==
-			              activator.Create(transportMessage, new MockRegisterOrderCommand()).GetType());
+			              activator.Create(transportMessage, new MockRegisterOrder()).GetType());
 			Assert.IsTrue(typeof (MockMemberRegistrationProcess) ==
-			              activator.Create(transportMessage, new MockRegisterMemberCommand()).GetType());
+			              activator.Create(transportMessage, new MockRegisterMember()).GetType());
 		}
 
 		[Test]
@@ -71,7 +71,7 @@ namespace Shuttle.Esb.Process.Tests
 
 			var activator = new ProcessActivator(Options.Create(new ProcessManagementOptions()));
 
-			Assert.Throws<ProcessException>(() => activator.Create(transportMessage, new MockRegisterMemberCommand()));
+			Assert.Throws<ProcessException>(() => activator.Create(transportMessage, new MockNullCommand()));
 		}
 
 		[Test]
@@ -84,7 +84,7 @@ namespace Shuttle.Esb.Process.Tests
 
 			var activator = new ProcessActivator(Options.Create(processManagementOptions));
 
-			Assert.Throws<ProcessException>(() => activator.Create(transportMessage, new MockEMailSentEvent()));
+			Assert.Throws<ProcessException>(() => activator.Create(transportMessage, new MockEMailSent()));
 		}
 	}
 }
