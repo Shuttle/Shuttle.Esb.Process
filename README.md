@@ -7,9 +7,15 @@ Process management for Shuttle.Esb endpoints using Shuttle.Recall event sourcing
 
 [Shuttle.Esb Samples](https://github.com/Shuttle/Shuttle.Esb.Samples)
 
-# Registration / Activation
+# Configuration
 
-The required components may be registered by calling `ComponentRegistryExtensions.RegisterProcessManagement(IComponentRegistry)`.
+Add the process management services to the `IServiceCollection` as follows:
 
-In order to activate the process managgement functionality you may call `ComponentResolverExtensions.ResolveProcessManagement(IComponentResolver)`.
+```c#
+services.AddProcessManagement(builder => {
+	builder.AddAssembly(assembly);
+	builder.AddAssembly("assemblyName");
+});
+```
 
+The `builder.AddAssembly()` method will result in all classes that implement `IProcessMessageAssessor` being added to the `IMessageHandlingAssessor` as well as registering the appropriate mappings in the `ProcessActivator` of the `IProcessMessageHandler<>` and `IProcessStartMessageHandler<>` interface implementations.

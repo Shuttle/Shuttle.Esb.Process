@@ -1,17 +1,16 @@
 ﻿using System.Threading;
-using Shuttle.Core.Pipelines;
-using Shuttle.Core.Threading;
+using Shuttle.Core.Contract;
 using Shuttle.Recall;
 
 namespace Shuttle.Esb.Process
 {
 	public class ProcessHandlerContext<T> : HandlerContext<T>, IProcessHandlerContext<T> where T : class
 	{
-		public ProcessHandlerContext(ITransportMessageFactory transportMessageFactory,
-			IPipelineFactory pipelineFactory, ISubscriptionManager subscriptionManager, TransportMessage transportMessage,
-			T message, CancellationToken cancellationToken, EventStream stream) :
-			base(transportMessageFactory, pipelineFactory, subscriptionManager, transportMessage, message, cancellationToken)
+		public ProcessHandlerContext(EventStream stream, IMessageSender messageSender, TransportMessage transportMessage,
+			T message, CancellationToken cancellationToken) :
+			base(messageSender, transportMessage, message, cancellationToken)
 		{
+			Guard.AgainstNull(stream, nameof(stream));
 			Stream = stream;
 		}
 
