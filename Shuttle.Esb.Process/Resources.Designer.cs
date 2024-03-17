@@ -88,15 +88,6 @@ namespace Shuttle.Esb.Process {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Process assessor type with AssemblyQualifiedName &apos;{0}&apos; does not have a default constructor..
-        /// </summary>
-        public static string MissingProcessAssessorConstructor {
-            get {
-                return ResourceManager.GetString("MissingProcessAssessorConstructor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Process type with AssemblyQualifiedName &apos;{0}&apos; could not be instantiated..
         /// </summary>
         public static string ProcessFactoryFunctionException {
@@ -111,6 +102,15 @@ namespace Shuttle.Esb.Process {
         public static string ProcessMessageMethodMissingException {
             get {
                 return ResourceManager.GetString("ProcessMessageMethodMissingException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Process message specification type with AssemblyQualifiedName &apos;{0}&apos; does not have a default constructor..
+        /// </summary>
+        public static string ProcessMessageSpecificationConstructorException {
+            get {
+                return ResourceManager.GetString("ProcessMessageSpecificationConstructorException", resourceCulture);
             }
         }
         

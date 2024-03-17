@@ -3,7 +3,7 @@ using Shuttle.Core.Specification;
 
 namespace Shuttle.Esb.Process
 {
-	public interface IProcessMessageAssessor : ISpecification<IPipelineEvent>
+	public interface IProcessMessageSpecification : ISpecification<IPipelineEvent>
 	{
 	}
 }

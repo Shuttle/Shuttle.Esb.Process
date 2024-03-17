@@ -62,7 +62,7 @@ namespace Shuttle.Esb.Process
 
             foreach (var assembly in assemblies)
             {
-                foreach (var type in reflectionService.GetTypesAssignableTo<IProcessMessageAssessor>(assembly))
+                foreach (var type in reflectionService.GetTypesAssignableTo<IProcessMessageSpecification>(assembly))
                 {
                     try
                     {
@@ -72,7 +72,7 @@ namespace Shuttle.Esb.Process
                     }
                     catch
                     {
-                        throw new ProcessException(string.Format(Resources.MissingProcessAssessorConstructor,
+                        throw new ProcessException(string.Format(Resources.ProcessMessageSpecificationConstructorException,
                             type.AssemblyQualifiedName));
                     }
                 }
