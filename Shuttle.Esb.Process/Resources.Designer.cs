@@ -97,7 +97,16 @@ namespace Shuttle.Esb.Process {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Handler type &apos;{0}&apos; does not have the required ProcessMessage method that handles message type &apos;{1}&apos;..
+        ///   Looks up a localized string similar to Handler type &apos;{0}&apos; does not have the required `ProcessMessageAsync` method that handles message type &apos;{1}&apos;..
+        /// </summary>
+        public static string ProcessMessageAsyncMethodMissingException {
+            get {
+                return ResourceManager.GetString("ProcessMessageAsyncMethodMissingException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler type &apos;{0}&apos; does not have the required `ProcessMessage` method that handles message type &apos;{1}&apos;..
         /// </summary>
         public static string ProcessMessageMethodMissingException {
             get {

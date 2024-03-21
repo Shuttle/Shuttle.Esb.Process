@@ -138,7 +138,7 @@
     <comment>0 = assembly qualified name of specification type</comment>
   </data>
   <data name="ProcessMessageMethodMissingException" xml:space="preserve">
-    <value>Handler type '{0}' does not have the required ProcessMessage method that handles message type '{1}'.</value>
+    <value>Handler type '{0}' does not have the required `ProcessMessage` method that handles message type '{1}'.</value>
     <comment>0 = handler full type name, 1 = message full type name</comment>
   </data>
   <data name="ConnectionStringNameException" xml:space="preserve">
@@ -147,5 +147,9 @@
   <data name="AssemblyNameException" xml:space="preserve">
     <value>Could not load assembly from name '{0}'.</value>
     <comment>0 = assembly name that failed to load</comment>
+  </data>
+  <data name="ProcessMessageAsyncMethodMissingException" xml:space="preserve">
+    <value>Handler type '{0}' does not have the required `ProcessMessageAsync` method that handles message type '{1}'.</value>
+    <comment>0 = handler full type name, 1 = message full type name</comment>
   </data>
 </root>

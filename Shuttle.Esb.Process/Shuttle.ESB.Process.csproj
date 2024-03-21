@@ -14,9 +14,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Shuttle.Core.Data" Version="13.0.2" />
-        <PackageReference Include="Shuttle.Esb" Version="13.2.1" />
-        <PackageReference Include="Shuttle.Recall" Version="16.1.1" />
+        <PackageReference Include="Shuttle.Core.Data" Version="15.0.1" />
+        <PackageReference Include="Shuttle.Esb" Version="14.0.0" />
+        <PackageReference Include="Shuttle.Recall" Version="17.0.0" />
     </ItemGroup>
 
     <ItemGroup>
