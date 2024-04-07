@@ -21,7 +21,6 @@ namespace Shuttle.Esb.Process
 
             services.AddOptions<ProcessManagementOptions>().Configure(options =>
             {
-                options.ConnectionStringName = processManagementBuilder.Options.ConnectionStringName;
                 options.AssemblyNames = processManagementBuilder.Options.AssemblyNames;
             });
 
