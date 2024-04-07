@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Shuttle.Core.Contract;
-using Shuttle.Core.Data;
 using Shuttle.Core.Pipelines;
 using Shuttle.Core.Reflection;
 using Shuttle.Core.Specification;
@@ -15,29 +14,23 @@ namespace Shuttle.Esb.Process
 {
     public class ProcessMessageHandlerInvoker : IMessageHandlerInvoker
     {
-        private readonly IDatabaseContextFactory _databaseContextFactory;
         private readonly IMessageHandlerInvoker _messageHandlerInvoker;
         private readonly IEventStore _eventStore;
         private readonly IMessageSender _messageSender;
         private readonly IProcessActivator _processActivator;
-        private readonly string _connectionStringName;
 
-        public ProcessMessageHandlerInvoker(IServiceProvider serviceProvider, IOptionsMonitor<ConnectionStringOptions> connectionStringOptions, IOptions<ProcessManagementOptions> processManagementOptions, IMessageSender messageSender, IProcessActivator processActivator, IDatabaseContextFactory databaseContextFactory, IEventStore eventStore, IMessageHandlingSpecification messageHandlingSpecification)
+        public ProcessMessageHandlerInvoker(IServiceProvider serviceProvider, IOptions<ProcessManagementOptions> processManagementOptions, IMessageSender messageSender, IProcessActivator processActivator, IEventStore eventStore, IMessageHandlingSpecification messageHandlingSpecification)
         {
             Guard.AgainstNull(serviceProvider, nameof(serviceProvider));
             Guard.AgainstNull(processManagementOptions, nameof(processManagementOptions));
             Guard.AgainstNull(processManagementOptions.Value, nameof(processManagementOptions.Value));
-            Guard.AgainstNull(connectionStringOptions, nameof(connectionStringOptions));
             Guard.AgainstNull(messageHandlingSpecification, nameof(messageHandlingSpecification));
 
 
             _messageSender = Guard.AgainstNull(messageSender, nameof(messageSender));
-            _databaseContextFactory = Guard.AgainstNull(databaseContextFactory, nameof(databaseContextFactory));
             _eventStore = Guard.AgainstNull(eventStore, nameof(eventStore));
             _processActivator = Guard.AgainstNull(processActivator, nameof(processActivator));
             _messageHandlerInvoker = new MessageHandlerInvoker(serviceProvider, messageSender);
-
-            _connectionStringName = processManagementOptions.Value.ConnectionStringName;
 
             var reflectionService = new ReflectionService();
 
@@ -89,14 +82,9 @@ namespace Shuttle.Esb.Process
 
             var processInstance = _processActivator.Create(transportMessage, message);
 
-            EventStream stream;
-
-            using (_databaseContextFactory.Create(_connectionStringName))
-            {
-                stream = sync
+            var stream = sync
                 ? _eventStore.Get(processInstance.CorrelationId)
                 : await _eventStore.GetAsync(processInstance.CorrelationId).ConfigureAwait(false);
-            }
 
             stream.Apply(processInstance);
 
@@ -119,17 +107,13 @@ namespace Shuttle.Esb.Process
 
             method.Invoke(processInstance, new[] {handlerContext});
 
-            using (_databaseContextFactory.Create(_connectionStringName))
+            if (sync)
             {
-                if (sync)
-                {
-                    _eventStore.Save(stream);
-                }
-                else
-                {
-                    await _eventStore.SaveAsync(stream).ConfigureAwait(false);
-                }
-                
+                _eventStore.Save(stream);
+            }
+            else
+            {
+                await _eventStore.SaveAsync(stream).ConfigureAwait(false);
             }
 
             return MessageHandlerInvokeResult.InvokedHandler(processInstance.GetType().AssemblyQualifiedName);

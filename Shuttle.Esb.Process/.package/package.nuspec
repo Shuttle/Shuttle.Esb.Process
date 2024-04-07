@@ -16,7 +16,6 @@
 		<copyright>Copyright (c) 2024, Eben Roux</copyright>
 		<tags>shuttle.recall process processmanager processmanagement saga</tags>
 		<dependencies>
-      <dependency id="Shuttle.Core.Data" version="15.0.1" />
       <dependency id="Shuttle.Esb" version="14.0.0" />
       <dependency id="Shuttle.Recall" version="17.0.0" />
 		</dependencies>

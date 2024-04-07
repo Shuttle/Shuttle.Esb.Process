@@ -17,7 +17,7 @@ namespace Shuttle.Esb.Process.Tests
 
 			var activator = new ProcessActivator(Options.Create(processManagementOptions));
 
-			Assert.IsFalse(activator.IsProcessMessage(transportMessage, new MockNullCommand()));
+			Assert.IsFalse(activator.IsProcessMessage(transportMessage, new MockNullCommand())); 
 
 			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockRegisterOrder()));
 			Assert.IsTrue(activator.IsProcessMessage(transportMessage, new MockEMailSent()));
