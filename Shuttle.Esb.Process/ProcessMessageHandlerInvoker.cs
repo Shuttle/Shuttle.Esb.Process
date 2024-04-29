@@ -25,8 +25,7 @@ namespace Shuttle.Esb.Process
             Guard.AgainstNull(processManagementOptions, nameof(processManagementOptions));
             Guard.AgainstNull(processManagementOptions.Value, nameof(processManagementOptions.Value));
             Guard.AgainstNull(messageHandlingSpecification, nameof(messageHandlingSpecification));
-
-
+            
             _messageSender = Guard.AgainstNull(messageSender, nameof(messageSender));
             _eventStore = Guard.AgainstNull(eventStore, nameof(eventStore));
             _processActivator = Guard.AgainstNull(processActivator, nameof(processActivator));

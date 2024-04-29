@@ -36,7 +36,9 @@ namespace Shuttle.Esb.Process
             foreach (var assembly in assemblies)
             {
                 RegisterMappings(assembly, typeof(IProcessMessageHandler<>), false);
+                RegisterMappings(assembly, typeof(IAsyncProcessMessageHandler<>), false);
                 RegisterMappings(assembly, typeof(IProcessStartMessageHandler<>), true);
+                RegisterMappings(assembly, typeof(IAsyncProcessStartMessageHandler<>), true);
             }
         }
 
