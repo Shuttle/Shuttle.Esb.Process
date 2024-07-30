@@ -102,7 +102,7 @@ namespace Shuttle.Esb.Process
                     messageType.FullName));
             }
 
-            var handlerContext = Activator.CreateInstance(contextType, stream, _messageSender, transportMessage, message, state.GetCancellationToken());
+            var handlerContext = Activator.CreateInstance(contextType, stream, _messageSender, transportMessage, message, pipelineEvent.Pipeline.CancellationToken);
 
             method.Invoke(processInstance, new[] {handlerContext});
 
