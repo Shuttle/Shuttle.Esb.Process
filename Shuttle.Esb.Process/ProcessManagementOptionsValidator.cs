@@ -11,11 +11,6 @@ namespace Shuttle.Esb.Process
         {
             Guard.AgainstNull(options, nameof(options));
 
-            if (string.IsNullOrWhiteSpace(options.ConnectionStringName))
-            {
-                return ValidateOptionsResult.Fail(Resources.ConnectionStringNameException);
-            }
-
             foreach (var assemblyName in options.AssemblyNames)
             {
                 try

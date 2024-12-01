@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Shuttle.Core.Contract;
-using Shuttle.Core.Data;
 using Shuttle.Core.Pipelines;
 using Shuttle.Core.Reflection;
 using Shuttle.Core.Specification;
@@ -14,43 +14,22 @@ namespace Shuttle.Esb.Process
 {
     public class ProcessMessageHandlerInvoker : IMessageHandlerInvoker
     {
-        private readonly IDatabaseContextFactory _databaseContextFactory;
         private readonly IMessageHandlerInvoker _messageHandlerInvoker;
         private readonly IEventStore _eventStore;
         private readonly IMessageSender _messageSender;
         private readonly IProcessActivator _processActivator;
-        private readonly string _providerName;
-        private readonly string _connectionString;
 
-        public ProcessMessageHandlerInvoker(IServiceProvider serviceProvider, IOptionsMonitor<ConnectionStringOptions> connectionStringOptions, IOptions<ProcessManagementOptions> processManagementOptions, IMessageSender messageSender, IProcessActivator processActivator, IDatabaseContextFactory databaseContextFactory, IEventStore eventStore, IMessageHandlingAssessor messageHandlingAssessor)
+        public ProcessMessageHandlerInvoker(IServiceProvider serviceProvider, IOptions<ProcessManagementOptions> processManagementOptions, IMessageSender messageSender, IProcessActivator processActivator, IEventStore eventStore, IMessageHandlingSpecification messageHandlingSpecification)
         {
             Guard.AgainstNull(serviceProvider, nameof(serviceProvider));
-            Guard.AgainstNull(connectionStringOptions, nameof(connectionStringOptions));
             Guard.AgainstNull(processManagementOptions, nameof(processManagementOptions));
             Guard.AgainstNull(processManagementOptions.Value, nameof(processManagementOptions.Value));
-            Guard.AgainstNull(messageSender, nameof(messageSender));
-            Guard.AgainstNull(processActivator, nameof(processActivator));
-            Guard.AgainstNull(databaseContextFactory, nameof(databaseContextFactory));
-            Guard.AgainstNull(eventStore, nameof(eventStore));
-            Guard.AgainstNull(messageHandlingAssessor, nameof(messageHandlingAssessor));
-
-            _messageSender = messageSender;
-            _databaseContextFactory = databaseContextFactory;
-            _eventStore = eventStore;
-            _processActivator = processActivator;
+            Guard.AgainstNull(messageHandlingSpecification, nameof(messageHandlingSpecification));
+            
+            _messageSender = Guard.AgainstNull(messageSender, nameof(messageSender));
+            _eventStore = Guard.AgainstNull(eventStore, nameof(eventStore));
+            _processActivator = Guard.AgainstNull(processActivator, nameof(processActivator));
             _messageHandlerInvoker = new MessageHandlerInvoker(serviceProvider, messageSender);
-
-            var options = connectionStringOptions.Get(processManagementOptions.Value.ConnectionStringName);
-
-            if (options == null)
-            {
-                throw new InvalidOperationException(string.Format(
-                    Core.Data.Resources.ConnectionStringMissingException,
-                    processManagementOptions.Value.ConnectionStringName));
-            }
-
-            _providerName = options.ProviderName;
-            _connectionString = options.ConnectionString;
 
             var reflectionService = new ReflectionService();
 
@@ -68,7 +47,7 @@ namespace Shuttle.Esb.Process
                     {
                         var specificationInstance = Activator.CreateInstance(type);
 
-                        messageHandlingAssessor.RegisterAssessor((ISpecification<IPipelineEvent>)specificationInstance);
+                        messageHandlingSpecification.Add((ISpecification<IPipelineEvent>)specificationInstance);
                     }
                     catch
                     {
@@ -79,7 +58,17 @@ namespace Shuttle.Esb.Process
             }
         }
 
-        public MessageHandlerInvokeResult Invoke(IPipelineEvent pipelineEvent)
+        public MessageHandlerInvokeResult Invoke(OnHandleMessage pipelineEvent)
+        {
+            return InvokeAsync(pipelineEvent, true).GetAwaiter().GetResult();
+        }
+
+        public async Task<MessageHandlerInvokeResult> InvokeAsync(OnHandleMessage pipelineEvent)
+        {
+            return await InvokeAsync(pipelineEvent, false);
+        }
+
+        private async Task<MessageHandlerInvokeResult> InvokeAsync(OnHandleMessage pipelineEvent, bool sync)
         {
             var state = pipelineEvent.Pipeline.State;
             var transportMessage = state.GetTransportMessage();
@@ -92,38 +81,41 @@ namespace Shuttle.Esb.Process
 
             var processInstance = _processActivator.Create(transportMessage, message);
 
-            EventStream stream;
-
-            using (_databaseContextFactory.Create(_providerName, _connectionString))
-            {
-                stream = _eventStore.Get(processInstance.CorrelationId);
-            }
+            var stream = sync
+                ? _eventStore.Get(processInstance.CorrelationId)
+                : await _eventStore.GetAsync(processInstance.CorrelationId).ConfigureAwait(false);
 
             stream.Apply(processInstance);
 
             var messageType = message.GetType();
             var contextType = typeof(ProcessHandlerContext<>).MakeGenericType(messageType);
             var processType = processInstance.GetType();
-            var method = processType.GetMethod("ProcessMessage", new[] {contextType});
+            var method = sync 
+                ? processType.GetMethod("ProcessMessage", new[] {contextType})
+                : processType.GetMethod("ProcessMessageAsync", new[] {contextType});
 
             if (method == null)
             {
                 throw new ProcessMessageMethodMissingException(string.Format(
-                    Resources.ProcessMessageMethodMissingException,
+                    sync ? Resources.ProcessMessageMethodMissingException : Resources.ProcessMessageAsyncMethodMissingException,
                     processInstance.GetType().FullName,
                     messageType.FullName));
             }
 
-            var handlerContext = Activator.CreateInstance(contextType, stream, _messageSender, transportMessage, message, state.GetCancellationToken());
+            var handlerContext = Activator.CreateInstance(contextType, stream, _messageSender, transportMessage, message, pipelineEvent.Pipeline.CancellationToken);
 
             method.Invoke(processInstance, new[] {handlerContext});
 
-            using (_databaseContextFactory.Create(_providerName, _connectionString))
+            if (sync)
             {
                 _eventStore.Save(stream);
             }
+            else
+            {
+                await _eventStore.SaveAsync(stream).ConfigureAwait(false);
+            }
 
-            return MessageHandlerInvokeResult.InvokedHandler(processInstance);
+            return MessageHandlerInvokeResult.InvokedHandler(processInstance.GetType().AssemblyQualifiedName);
         }
     }
 }

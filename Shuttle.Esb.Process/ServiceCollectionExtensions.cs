@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Shuttle.Core.Contract;
 
@@ -22,7 +21,6 @@ namespace Shuttle.Esb.Process
 
             services.AddOptions<ProcessManagementOptions>().Configure(options =>
             {
-                options.ConnectionStringName = processManagementBuilder.Options.ConnectionStringName;
                 options.AssemblyNames = processManagementBuilder.Options.AssemblyNames;
             });
 
